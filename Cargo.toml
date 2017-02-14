@@ -5,5 +5,7 @@ authors = ["Cody P Schafer <dev@codyps.com>"]
 keywords = [ "OsString", "OsStr", "ffi"]
 include = [ "Cargo.toml", "src/**/*.rs", "tests/*.rs" ]
 license = "Apache-2.0 OR MIT"
+repository = "https://github.com/jmesmon/os-str-generic"
+documentation = "https://docs.rs/os-str-generic"
 
 [dependencies]
