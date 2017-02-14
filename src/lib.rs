@@ -17,6 +17,12 @@ pub struct OsStrElement {
     inner: Elem 
 }
 
+impl OsStrElement {
+    pub fn raw(&self) -> Elem {
+        self.inner
+    }
+}
+
 impl<'a> ::std::cmp::PartialEq<&'a OsStr> for OsStrElement {
     fn eq(&self, rhs: & &'a OsStr) -> bool { 
         rhs.len() == 1 && rhs.elements().next().unwrap().inner == self.inner
