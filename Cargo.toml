@@ -1,9 +1,9 @@
 [package]
-name = "osstr-extra"
+name = "os-str-generic"
 version = "0.1.0"
 authors = ["Cody P Schafer <dev@codyps.com>"]
 keywords = [ "OsString", "OsStr", "ffi"]
-include = [ "Cargo.toml", "src/*.rs" ]
+include = [ "Cargo.toml", "src/**.rs", "tests/*.rs" ]
 license = "Apache-2.0 OR MIT"
 
 [dependencies]

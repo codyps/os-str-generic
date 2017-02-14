@@ -8,8 +8,12 @@ type Elem = u16;
 #[cfg(not(windows))]
 type Elem = u8;
 
+/// A single "element" of an OsStr. On windows, this corresponds to a `u16`. On unix-like systems, it
+/// corresponds to a `u8`
+/// 
+/// Can be compared to another `OsStrElement` or a `&OsStr`.
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct OsStrElement {
+pub struct OsStrElement {
     inner: Elem 
 }
 
@@ -18,6 +22,14 @@ impl<'a> ::std::cmp::PartialEq<&'a OsStr> for OsStrElement {
         rhs.len() == 1 && rhs.elements().next().unwrap().inner == self.inner
     }
 }
+
+/*
+impl<'a> ::std::cmp::PartialEq<&'a str> for OsStrElement {
+    fn eq(&self, rhs: & &'a str) -> bool {
+        rhs.len() == 1 && rhs
+    }
+}
+*/
 
 #[cfg(windows)]
 #[derive(Clone)]
@@ -48,8 +60,9 @@ impl<'a> OsStrElementsInner<'a> {
     }
 }
 
+/// Iterator over the elements of a `&OsStr`
 #[derive(Debug, Clone)]
-struct OsStrElements<'a> {
+pub struct OsStrElements<'a> {
     inner: OsStrElementsInner<'a>,
 }
 
@@ -61,9 +74,17 @@ impl<'a> Iterator for OsStrElements<'a> {
     }
 }
 
-trait OsStrGenericExt {
+/// Extentions to OsStr that allow working with them without filling code with `#[cfg(...)]`
+pub trait OsStrGenericExt {
     // type Element;
+    
+    /// Iterate over the smallest elements of an OsStr. Element meaning is dependent on specific
+    /// OS.
     fn elements(&self) -> OsStrElements;
+
+    // fn starts_with(&self, prefix) -> bool
+    // fn without_prefix(&self, prefix) -> Option<OsString> {}
+    //
 }
 
 impl OsStrGenericExt for OsStr {
@@ -101,17 +122,3 @@ fn split_flags(flags: &OsStr) -> OsStrSplit
     }
 }
 */
-
-#[cfg(test)]
-mod tests {
-    use super::OsStrGenericExt;
-    use std::ffi::{OsStr};
-
-    #[test]
-    fn elements_eq() {
-        let mut v = OsStr::new("hi").elements();
-        assert_eq!(v.next().unwrap(), OsStr::new("h"));
-        assert_eq!(v.next().unwrap(), OsStr::new("i"));
-        assert_eq!(v.next(), None);
-    }
-}
