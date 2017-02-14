@@ -29,6 +29,18 @@ impl<'a> ::std::cmp::PartialEq<&'a OsStr> for OsStrElement {
     }
 }
 
+impl ::std::cmp::PartialEq<char> for OsStrElement {
+    fn eq(&self, rhs: &char) -> bool {
+        self.inner as u8 == *rhs as u8
+    }
+}
+
+impl ::std::cmp::PartialEq<u8> for OsStrElement {
+    fn eq(&self, rhs: &u8) -> bool {
+        self.inner as u8 == *rhs
+    }
+}
+
 /*
 impl<'a> ::std::cmp::PartialEq<&'a str> for OsStrElement {
     fn eq(&self, rhs: & &'a str) -> bool {
