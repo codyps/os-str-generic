@@ -1,4 +1,5 @@
-use std::ffi::OsStr;
+use std::ffi::{OsStr, OsString};
+use std::iter::FromIterator;
 
 #[cfg(windows)]
 type Elem = u16;
@@ -8,9 +9,9 @@ type Elem = u8;
 
 /// A single "element" of an OsStr. On windows, this corresponds to a `u16`. On unix-like systems, it
 /// corresponds to a `u8`
-/// 
+///
 /// Can be compared to another `OsStrElement` or a `&OsStr`.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Copy)]
 pub struct OsStrElement {
     inner: Elem
 }
@@ -19,10 +20,28 @@ impl OsStrElement {
     pub fn raw(&self) -> Elem {
         self.inner
     }
+
+    #[cfg(windows)]
+    fn as_os_string_inner(&self) -> OsString {
+        use std::os::windows::ffi::OsStringExt;
+        let v = [self.inner];
+        OsString::from_wide(&v[..])
+    }
+
+    #[cfg(not(windows))]
+    fn as_os_string_inner(&self) -> OsString {
+        use std::os::unix::ffi::OsStringExt;
+        let v = vec![self.inner];
+        OsString::from_vec(v)
+    }
+
+    pub fn as_os_string(&self) -> OsString {
+        self.as_os_string_inner()
+    }
 }
 
 impl<'a> ::std::cmp::PartialEq<&'a OsStr> for OsStrElement {
-    fn eq(&self, rhs: & &'a OsStr) -> bool { 
+    fn eq(&self, rhs: & &'a OsStr) -> bool {
         rhs.len() == 1 && rhs.elements().next().unwrap().inner == self.inner
     }
 }
@@ -36,6 +55,19 @@ impl ::std::cmp::PartialEq<char> for OsStrElement {
 impl ::std::cmp::PartialEq<u8> for OsStrElement {
     fn eq(&self, rhs: &u8) -> bool {
         self.inner as u8 == *rhs
+    }
+}
+
+impl FromIterator<OsStrElement> for OsString {
+    fn from_iter<T>(iter: T) -> OsString
+        where T: IntoIterator<Item=OsStrElement>
+    {
+        let mut s = OsString::new();
+        for i in iter.into_iter() {
+            s.push(i.as_os_string())
+        }
+
+        s
     }
 }
 
@@ -113,8 +145,26 @@ pub trait OsStrGenericExt {
         }
     }
 
-    // fn without_prefix(&self, prefix) -> Option<OsString> {}
-    //
+    fn without_prefix<T: AsRef<OsStr>>(&self, prefix: T) -> Option<OsString> {
+        let mut ei = self.elements().peekable();
+        let mut pi = prefix.as_ref().elements();
+        loop {
+            {
+                let e = ei.peek();
+                let p = pi.next();
+                match (e, p) {
+                    (Some(_), None) => break,
+                    (None, None) => break,
+                    (None, Some(_)) => return None,
+                    (Some(c1), Some(c2)) => if c1.clone() != c2 { return None }
+                }
+            }
+
+            ei.next();
+        }
+
+        Some(ei.collect())
+    }
 }
 
 impl OsStrGenericExt for OsStr {

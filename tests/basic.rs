@@ -1,6 +1,6 @@
 extern crate os_str_generic;
 use os_str_generic::OsStrGenericExt;
-use std::ffi::{OsStr};
+use std::ffi::{OsStr,OsString};
 
 #[test]
 fn eeq_osstr() {
@@ -29,4 +29,12 @@ fn eeq_u8() {
 #[test]
 fn starts_with() {
     assert!(OsStr::new("hello world").starts_with("hello"));
+    assert!(!OsStr::new("hello world").starts_with("helli"));
+    assert!(OsStr::new("hello world").starts_with("hello world"));
+    assert!(!OsStr::new("hello world").starts_with("hello world "));
+}
+
+#[test]
+fn without_prefix() {
+    assert_eq!(OsStr::new("hello world").without_prefix("hello "), Some(OsString::from("world")))
 }
