@@ -1,5 +1,6 @@
 use std::ffi::{OsStr, OsString};
 use std::iter::FromIterator;
+use std::ascii::AsciiExt;
 
 #[cfg(windows)]
 type Elem = u16;
@@ -48,13 +49,13 @@ impl<'a> ::std::cmp::PartialEq<&'a OsStr> for OsStrElement {
 
 impl ::std::cmp::PartialEq<char> for OsStrElement {
     fn eq(&self, rhs: &char) -> bool {
-        self.inner as u8 == *rhs as u8
+        rhs.is_ascii() && self.inner as u8 == *rhs as u8
     }
 }
 
 impl ::std::cmp::PartialEq<u8> for OsStrElement {
     fn eq(&self, rhs: &u8) -> bool {
-        self.inner as u8 == *rhs
+        self.inner == self.inner as u8 as Elem && self.inner as u8 == *rhs
     }
 }
 
