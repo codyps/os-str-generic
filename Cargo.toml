@@ -1,6 +1,6 @@
 [package]
 name = "os-str-generic"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Cody P Schafer <dev@codyps.com>"]
 keywords = [ "OsString", "OsStr", "ffi"]
 include = [ "Cargo.toml", "src/**/*.rs", "tests/*.rs" ]
