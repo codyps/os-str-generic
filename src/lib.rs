@@ -1,5 +1,3 @@
-#[deny(unused_imports)]
-
 use std::ffi::OsStr;
 
 #[cfg(windows)]
