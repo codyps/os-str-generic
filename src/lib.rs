@@ -12,7 +12,7 @@ type Elem = u8;
 /// Can be compared to another `OsStrElement` or a `&OsStr`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OsStrElement {
-    inner: Elem 
+    inner: Elem
 }
 
 impl OsStrElement {
@@ -93,12 +93,26 @@ impl<'a> Iterator for OsStrElements<'a> {
 /// Extentions to OsStr that allow working with them without filling code with `#[cfg(...)]`
 pub trait OsStrGenericExt {
     // type Element;
-    
+
     /// Iterate over the smallest elements of an OsStr. Element meaning is dependent on specific
     /// OS.
     fn elements(&self) -> OsStrElements;
 
-    // fn starts_with(&self, prefix) -> bool
+    fn starts_with<T: AsRef<OsStr>>(&self, prefix: T) -> bool {
+        let mut ei = self.elements();
+        let mut pi = prefix.as_ref().elements();
+        loop {
+            let e = ei.next();
+            let p = pi.next();
+            match (e, p) {
+                (Some(_), None) => return true,
+                (None, None) => return true,
+                (None, Some(_)) => return false,
+                (Some(c1), Some(c2)) => if c1 != c2 { return false }
+            }
+        }
+    }
+
     // fn without_prefix(&self, prefix) -> Option<OsString> {}
     //
 }

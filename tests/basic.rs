@@ -25,3 +25,8 @@ fn eeq_u8() {
     assert_eq!(v.next().unwrap(), b'i');
     assert_eq!(v.next(), None)
 }
+
+#[test]
+fn starts_with() {
+    assert!(OsStr::new("hello world").starts_with("hello"));
+}
