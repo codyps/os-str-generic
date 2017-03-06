@@ -36,5 +36,7 @@ fn starts_with() {
 
 #[test]
 fn without_prefix() {
-    assert_eq!(OsStr::new("hello world").without_prefix("hello "), Some(OsString::from("world")))
+    assert_eq!(OsStr::new("hello world").without_prefix("hello "), Some(OsString::from("world")));
+    assert_eq!(OsStr::new("hello world").without_prefix("hello1"), None);
+    assert_eq!(OsStr::new("ello world").without_prefix("hello "), None);
 }
